@@ -9,15 +9,15 @@
   <a href="https://discord.com/invite/XHheP5Fn" target="_blank"><img alt="Discord" src="https://img.shields.io/badge/Discord-StepFun-white?logo=discord&logoColor=white"/></a>
 </div>
 <div align="center">
-  <a href="assets/Step-DeepResearch_Technical_Report.pdf"><img src="https://img.shields.io/static/v1?label=Step-DeepResearch&message=Paper&color=red"></a> &ensp;
+  <a href="https://github.com/stepfun-ai/StepDeepResearch"><img src="https://img.shields.io/static/v1?label=Step-DeepResearch&message=Paper&color=red"></a> &ensp;
   <a href="https://platform.stepfun.com/interface-key"><img src="https://img.shields.io/static/v1?label=Step-DeepResearch&message=Model%20API&color=blue"></a>
   <a href="https://github.com/stepfun-ai/StepDeepResearch/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue?&color=blue"/></a>
 </div>
 
 
 ## News
-* Dec 23, 2025: 👋 You can get beta access to the model API by completing the survey. [Get Access](https://wvixbzgc0u7.feishu.cn/share/base/form/shrcn8CP78PJgkjvvIh2C3EF3cc) 
-* Dec 23, 2025: 👋 We have made our technical report available. [Read](assets/Step-DeepResearch_Technical_Report.pdf)
+* Dec 24, 2025: 👋 You can get beta access to the model API by completing the survey. [Get Access](https://wvixbzgc0u7.feishu.cn/share/base/form/shrcn8CP78PJgkjvvIh2C3EF3cc) 
+* Dec 24, 2025: 👋 We have made our technical report available. [Read](https://github.com/stepfun-ai/StepDeepResearch)
 
 
 ## Introduction
@@ -588,7 +588,7 @@ Outputs:
 
 ## Our paper
 
-We have made our technical report available. [Read](assets/Step-DeepResearch_Technical_Report.pdf)
+We have made our technical report available. [Read](https://github.com/stepfun-ai/StepDeepResearch)
 
 ## License
 
