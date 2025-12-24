@@ -1,0 +1,41 @@
+variables:
+  APP: $CI_PROJECT_NAMESPACE
+  SERVER: $CI_PROJECT_NAME
+  VERSION: $CI_COMMIT_SHA
+  IMAGE_TAG_PROD: ${CI_COMMIT_TAG}-${CI_COMMIT_SHORT_SHA}
+  IMAGE_TAG_DEV: dev-${CI_COMMIT_BRANCH}${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}-${CI_COMMIT_SHORT_SHA}
+  IMAGE: catalyst-cn-shanghai.cr.volces.com/capy/${CI_PROJECT_PATH}
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_TITLE == "edit by devops"
+      when: never
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_TAG
+
+default:
+ tags: [shell]
+ before_script:
+   - export PATH=$PWD/node_modules/.bin:$PATH
+   # - command -v moon || pnpm install
+   - pnpm install
+   - git fetch origin main
+
+stages:
+  # - lint
+  - image
+
+
+image-push-dev:
+  stage: image
+  script:
+    - docker build -f "Dockerfile"  --platform=linux/amd64 -t ${IMAGE}:${IMAGE_TAG_DEV} ${CI_PROJECT_DIR}
+    - docker push ${IMAGE}:${IMAGE_TAG_DEV}
+  rules:
+    - when: manual
+      allow_failure: true
+

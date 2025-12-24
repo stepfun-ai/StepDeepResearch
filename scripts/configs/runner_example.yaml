@@ -1,0 +1,13 @@
+# task: "列出最近的 AI 安全新闻"
+# task_id: custom_id           # optional override for the single task
+tasks_file: scripts/configs/tasks.example.json  # project-root relative JSON list of tasks
+
+output_dir: scripts/results
+agent_name: DeepResearchAgent
+mode: multi                   
+overwrite: false
+log_level: INFO
+no_stream: true # set true to disable streaming
+request_timeout: 300          # seconds per request
+context_upper_limit: 80000  # optional: force-final-answer context upper token limit
+context_lower_limit: 60000   # optional: context lower token limit to start forcing final answer

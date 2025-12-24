@@ -1,0 +1,99 @@
+[project]
+name = "stepdeepresearch"
+dynamic = ["version"]
+description = ""
+authors = [
+    {name = "xieli", email = "xieli@stepfun.com"},
+    {name = "zhouchangbin", email = "zhouchangbin@stepfun.com"},
+    {name = "gaoyinrun", email = "gaoyinrun@stepfun.com"},
+    {name = "liujiashuo", email = "liujiashuo@stepfun.com"},
+]
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "adaptio>=0.6.0",
+    "aiofiles>=24.1.0",
+    "aiohttp>=3.13.2",
+    "anthropic>=0.75.0",
+    "async-lru>=2.0.5",
+    "fastapi>=0.120.1",
+    "fastmcp>=2.12.2",
+    "grandalf>=0.8",
+    "griffe>=1.13.0",
+    "langgraph>=0.2.0",
+    "langgraph-checkpoint-sqlite>=3.0.0",
+    "lark>=1.3.0",
+    "loguru>=0.7.3",
+    "markitdown>=0.1.3",
+    "mcp>=1.13.1",
+    "megfile>=4.2.4",
+    "openai>=2.8.1",
+    "openai-agents>=0.6.1",
+    "psutil>=7.0.0",
+    "pydantic>=2.11.7",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "python-json-logger>=4.0.0",
+    "python-magic>=0.4.27",
+    "python-ulid>=3.1.0",
+    "rich>=13.0.0",
+    "textual>=0.40.0",
+    "websockets>=15.0.1",
+    "xmltodict>=1.0.2",
+]
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["cortex", "agent_toolkit", "anymodel", "agentkit"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "cortex/_version.py"
+
+[tool.uv.sources]
+
+[tool.ruff]
+# --- Linter 和 Formatter 共享设置 ---
+
+# 1. 最大行长度（与 Black 默认值一致）
+line-length = 88
+
+# 2. 目标 Python 版本（影响代码现代化规则 UP，但此处未启用）
+target-version = "py312"
+
+# 3. 排除文件或目录
+exclude = [
+    ".venv",
+    "docs",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
+# --- Linter 规则选择 (Ruff check) ---
+
+# 4. 选择要启用的规则集
+# E: pycodestyle 错误
+# W: pycodestyle 警告
+# F: Pyflakes (未使用的导入/变量)
+# I: isort (导入排序)
+# PLE, PLW: Pylint 错误和警告 (代码质量)
+select = [
+    "E", "W", "F", "I",
+    "PLE", "PLW",
+]
+
+# 5. 忽略特定的规则 (如果你觉得某些规则不适合你的项目)
+ignore = [
+    "E501",  # 再次忽略行长度检查，交给 Formatter 处理
+    "B008",  # 不鼓励在函数调用中使用可变默认参数
+    "S101",  # assert 语句不应该用于生产代码（测试文件中常用）
+    "W293",
+]
+
+[tool.ruff.format]

@@ -1,0 +1,32 @@
+# common file types
+*.log
+*.ipynb
+#*.json
+# Allow json files in frontend directory
+!agent_cortex/adapter/frontend/**/*.json
+*.csv
+*.jsonl
+*.png
+*.jpg
+
+# local dev files/directories
+**/_version.py
+dist/
+.env
+.venv
+__pycache__/
+downloads*
+logs
+deprecated/
+*_debug.yaml
+scripts/*_debug.py
+tests/*_debug.py
+*.png
+!assets/**
+trash/
+traces/
+.idea/
+.cursor/
+*.db
+
+eval/

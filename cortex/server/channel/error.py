@@ -1,0 +1,2 @@
+class ChannelClosedError(Exception):
+    pass
