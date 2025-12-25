@@ -9,15 +9,15 @@
   <a href="https://discord.com/invite/XHheP5Fn" target="_blank"><img alt="Discord" src="https://img.shields.io/badge/Discord-StepFun-white?logo=discord&logoColor=white"/></a>
 </div>
 <div align="center">
-  <a href="assets/Step-DeepResearch_Technical_Report.pdf"><img src="https://img.shields.io/static/v1?label=Step-DeepResearch&message=Paper&color=red"></a> &ensp;
+  <a href="https://arxiv.org/pdf/2512.20491"><img src="https://img.shields.io/static/v1?label=Step-DeepResearch&message=Arxiv&color=red"></a> &ensp;
   <a href="https://platform.stepfun.com/interface-key"><img src="https://img.shields.io/static/v1?label=Step-DeepResearch&message=Model%20API&color=blue"></a>
   <a href="https://github.com/stepfun-ai/StepDeepResearch/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue?&color=blue"/></a>
 </div>
 
 
 ## News
-* Dec 24, 2025: 👋 You can get beta access to the model API by completing the survey. [Get Access](https://wvixbzgc0u7.feishu.cn/share/base/form/shrcn8CP78PJgkjvvIh2C3EF3cc) 
-* Dec 24, 2025: 👋 We have made our technical report available. [Read](assets/Step-DeepResearch_Technical_Report.pdf)
+* Dec 24, 2025: 👋 You can get beta access to the model API by completing the form. [Get Access](https://wvixbzgc0u7.feishu.cn/share/base/form/shrcn8CP78PJgkjvvIh2C3EF3cc) 
+* Dec 24, 2025: 👋 We have made our technical report available. [Read](https://arxiv.org/pdf/2512.20491)
 
 
 ## Introduction
@@ -588,11 +588,25 @@ Outputs:
 
 ## Our paper
 
-We have made our technical report available. [Read](assets/Step-DeepResearch_Technical_Report.pdf)
+We have made our technical report available. [Read](https://arxiv.org/pdf/2512.20491)
 
 ## License
 
 The code in the repository is licensed under [Apache 2.0](LICENSE) License.
+
+## Citation
+
+```
+@misc{hu2025stepdeepresearchtechnicalreport,
+      title={Step-DeepResearch Technical Report}, 
+      author={Chen Hu and Haikuo Du and Heng Wang and Lin Lin and Mingrui Chen and Peng Liu and Ruihang Miao and Tianchi Yue and Wang You and Wei Ji and Wei Yuan and Wenjin Deng and Xiaojian Yuan and Xiaoyun Zhang and Xiangyu Liu and Xikai Liu and Yanming Xu and Yicheng Cao and Yifei Zhang and Yongyao Wang and Yubo Shu and Yurong Zhang and Yuxiang Zhang and Zheng Gong and Zhichao Chang and Binyan Li and Dan Ma and Furong Jia and Hongyuan Wang and Jiayu Liu and Jing Bai and Junlan Liu and Manjiao Liu and Na Wang and Qiuping Wu and Qinxin Du and Shiwei Li and Wen Sun and Yifeng Gong and Yonglin Chen and Yuling Zhao and Yuxuan Lin and Ziqi Ren and Zixuan Wang and Aihu Zhang and Brian Li and Buyun Ma and Kang An and Li Xie and Mingliang Li and Pan Li and Shidong Yang and Xi Chen and Xiaojia Liu and Yuchu Luo and Yuan Song and YuanHao Ding and Yuanwei Liang and Zexi Li and Zhaoning Zhang and Zixin Zhang and Binxing Jiao and Daxin Jiang and Jiansheng Chen and Jing Li and Xiangyu Zhang and Yibo Zhu},
+      year={2025},
+      eprint={2512.20491},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2512.20491}, 
+}
+```
 
 ## Star History
 
