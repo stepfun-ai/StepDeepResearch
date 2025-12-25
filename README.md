@@ -9,7 +9,7 @@
   <a href="https://discord.com/invite/XHheP5Fn" target="_blank"><img alt="Discord" src="https://img.shields.io/badge/Discord-StepFun-white?logo=discord&logoColor=white"/></a>
 </div>
 <div align="center">
-  <a href="assets/Step-DeepResearch_Technical_Report.pdf"><img src="https://img.shields.io/static/v1?label=Step-DeepResearch&message=Paper&color=red"></a> &ensp;
+  <a href="https://arxiv.org/pdf/2512.20491"><img src="https://img.shields.io/static/v1?label=Step-DeepResearch&message=Paper&color=red"></a> &ensp;
   <a href="https://platform.stepfun.com/interface-key"><img src="https://img.shields.io/static/v1?label=Step-DeepResearch&message=Model%20API&color=blue"></a>
   <a href="https://github.com/stepfun-ai/StepDeepResearch/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue?&color=blue"/></a>
 </div>
