@@ -16,6 +16,12 @@
 
 
 ## News
+* Dec 25, 2025: 👋 You can join our group chat to get updates on your beta API application status and the latest project developments.
+  <div align="center">
+    <img src="assets/wechat_qr_code.jpg" alt="WeChat QR code" width="180" />
+    <img src="assets/feishu_qr_code.png" alt="Feishu QR code" width="180" />
+  </div>
+
 * Dec 24, 2025: 👋 You can get beta access to the model API by completing the form. [Get Access](https://wvixbzgc0u7.feishu.cn/share/base/form/shrcn8CP78PJgkjvvIh2C3EF3cc) 
 * Dec 24, 2025: 👋 We have made our technical report available. [Read](https://arxiv.org/pdf/2512.20491)
 
@@ -589,6 +595,14 @@ Outputs:
 ## Our paper
 
 We have made our technical report available. [Read](https://arxiv.org/pdf/2512.20491)
+
+## Contact Us
+
+You can join our group chat to get updates on your beta API application status and the latest project developments.
+<div align="center">
+  <img src="assets/wechat_qr_code.jpg" alt="WeChat QR code" width="180" />
+  <img src="assets/feishu_qr_code.png" alt="Feishu QR code" width="180" />
+</div>
 
 ## License
 
