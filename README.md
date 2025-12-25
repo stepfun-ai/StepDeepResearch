@@ -25,7 +25,7 @@
   **Step-DeepResearch** is a cost-effective, end-to-end deep research agent model designed for autonomous information exploration and professional report generation in open-ended research scenarios.
   - **Atomic Capability Integration**: By decomposing complex research tasks into trainable atomic capabilities—including planning, information seeking, reflection and cross-validation, and professional report generation—and achieving deep internalization at the model level, the system ensures closed-loop reflection and dynamic correction within a single inference pass.
   - **Progressive Training Pipeline**: We establish a complete optimization path from Agentic Mid-Training to Supervised Fine-Tuning (SFT) and Reinforcement Learning (RL), reshaping the training objective from "predicting the next token" to "deciding the next atomic action." This approach effectively enhances the model's adaptive capabilities and generalization performance in complex environments.
-  - **Strong Performance Across Model Scales**: With only 32B parameters, Step-DeepResearch achieves 61.4% on Scale AI Research Rubrics, matching OpenAI Deep Research and Gemini Deep Research. In expert human evaluations on ADR-Bench, its Elo score significantly outperforms larger models including DeepSeek-v3.2 and GLM-4.6, and rivals state-of-the-art deep research systems such as Qwen DeepResearch.
+  - **Strong Performance Across Model Scales**: With only 32B parameters, Step-DeepResearch achieves 61.4% on Scale AI Research Rubrics, matching OpenAI Deep Research and Gemini Deep Research. In expert human evaluations on ADR-Bench, its Elo score significantly outperforms larger models including DeepSeek-v3.2 and GLM-4.6, and rivals top-tier closed-source models.
   - **Superior Cost-Effectiveness**: With extremely low deployment and inference costs while maintaining expert-level research capabilities, Step-DeepResearch stands as the most cost-effective deep research agent solution currently available in the industry.
   - **Access**: Available via StepFun Open Platform API, free for the first month.
 
@@ -480,7 +480,7 @@ Agent的记忆系统将从独立组件演进为操作系统级别的原生能力
 
 ## Quick Start
 
-You can get beta access to the model API by completing the [survey](https://wvixbzgc0u7.feishu.cn/share/base/form/shrcn8CP78PJgkjvvIh2C3EF3cc).
+You can get beta access to the model API by completing the [form](https://wvixbzgc0u7.feishu.cn/share/base/form/shrcn8CP78PJgkjvvIh2C3EF3cc).
 
 ### Requirements
 
@@ -610,4 +610,4 @@ The code in the repository is licensed under [Apache 2.0](LICENSE) License.
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=stepfun-ai/StepDeepResearch&type=Date)](https://star-history.com/#stepfun-ai/StepDeepResearch&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=stepfun-ai/StepDeepResearch&type=date&legend=top-left)](https://www.star-history.com/#stepfun-ai/StepDeepResearch&type=date&legend=top-left)
