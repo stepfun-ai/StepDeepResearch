@@ -1,7 +1,6 @@
 import argparse
 import asyncio
 import logging
-import os
 
 from agentkit.trace import LocalStorageTracer
 from cortex.agents.agent_factory import AgentFactory
