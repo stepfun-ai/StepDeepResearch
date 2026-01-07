@@ -9,9 +9,7 @@ from uuid import uuid4
 
 from cortex.agents.base_agent import BaseAgent
 from cortex.agents.base_step_agent import (
-    DEFAULT_FORCE_FINAL_ANSWER_LOWER_LIMIT,
     DEFAULT_FORCE_FINAL_ANSWER_PROMPT,
-    DEFAULT_FORCE_FINAL_ANSWER_UPPER_LIMIT,
 )
 from cortex.agents.react_agent import ReActAgent
 from cortex.agents.types import AgentConfig
@@ -143,8 +141,6 @@ def get_dr_agent_config() -> AgentConfig:
         max_steps=50,
         extra_config={
             "force_final_answer": True,
-            "final_answer_context_upper_limit": DEFAULT_FORCE_FINAL_ANSWER_UPPER_LIMIT,
-            "final_answer_context_lower_limit": DEFAULT_FORCE_FINAL_ANSWER_LOWER_LIMIT,
             "final_answer_prompt": DEFAULT_FORCE_FINAL_ANSWER_PROMPT,
         },
     )

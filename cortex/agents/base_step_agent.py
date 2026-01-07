@@ -17,6 +17,7 @@ from cortex.context import BaseContext
 from cortex.model.definition import ChatMessage
 from cortex.model.provider import ModelProvider
 from cortex.tools.toolset import ToolSet
+from cortex.runtime_config import get_context_limit_overrides
 
 try:
     import tiktoken
@@ -115,6 +116,20 @@ class BaseStepAgent(BaseAgent):
         threshold_override = extra_cfg.get("final_answer_context_threshold")
         upper_override = extra_cfg.get("final_answer_context_upper_limit")
         lower_override = extra_cfg.get("final_answer_context_lower_limit")
+        upper_from_extra = upper_override is not None
+        lower_from_extra = lower_override is not None
+        if not upper_from_extra or not lower_from_extra:
+            runtime_upper, runtime_lower = get_context_limit_overrides()
+            if not upper_from_extra and runtime_upper is not None:
+                upper_override = runtime_upper
+            # Only apply runtime lower default when upper isn't explicitly overridden;
+            # otherwise keep the existing "derive lower from upper" behavior.
+            if (
+                not lower_from_extra
+                and not upper_from_extra
+                and runtime_lower is not None
+            ):
+                lower_override = runtime_lower
 
         def _normalize_limit(value: Any) -> int | None:
             if isinstance(value, (int, float)):

@@ -1,0 +1,6 @@
+# Global runtime defaults for StepDeepResearch.
+#
+# Used as the default context budget for the force-final-answer workflow in BaseStepAgent.
+# `scripts.runner` can override these via its own `--config` YAML or CLI flags.
+context_upper_limit: 80000
+context_lower_limit: 60000
