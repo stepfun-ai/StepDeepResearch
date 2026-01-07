@@ -38,6 +38,7 @@ dependencies = [
     "python-ulid>=3.1.0",
     "rich>=13.0.0",
     "textual>=0.40.0",
+    "tiktoken>=0.7.0",
     "websockets>=15.0.1",
     "xmltodict>=1.0.2",
 ]
