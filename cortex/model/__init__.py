@@ -43,12 +43,14 @@ class ModelAPI:
         messages: list[ChatMessage],
         tools: list | None = None,
         log_file: str | None = None,
+        trace_request: dict | None = None,
     ) -> ModelMessage:
         """Call model API, return accumulated message"""
         ctx = get_current_context()
         with ctx.llm_span(name="ModelAPI.chat_completion") as span:
             span.update_payload_data(
-                request={
+                request=trace_request
+                or {
                     # "model_params": self.params(),
                     "messages": messages,
                     "tools": tools,
@@ -70,6 +72,7 @@ class ModelAPI:
         messages: list[ChatMessage],
         tools: list | None = None,
         log_file: str | None = None,
+        trace_request: dict | None = None,
     ) -> AsyncGenerator[ModelMessage, None]:
         """Call model API, return streaming messages"""
         accumulated_message = None
@@ -92,7 +95,8 @@ class ModelAPI:
         ctx = get_current_context()
         with ctx.llm_span(name="ModelAPI.chat_completion_stream") as span:
             span.update_payload_data(
-                request={
+                request=trace_request
+                or {
                     # "model_params": self.params(),
                     "messages": messages,
                     "tools": tools,

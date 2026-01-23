@@ -36,6 +36,10 @@ async def main():
     http_server = HttpServer(orch, tracer=tracer)
     
     logger.info(f"Starting server on port={args.port}")
+    print(
+        f"Demo server started: http://localhost:{args.port} (press Ctrl+C to stop)",
+        flush=True,
+    )
     await http_server.start(port=args.port)
 
 

@@ -43,12 +43,14 @@ async def init_dr_tools(context_id: str | None = None) -> ToolSet:
     shell_tool = create_shell_tool()
     toolset.register(shell_tool)
 
-    # 2. Web Surfer tool (requires STEP_SEARCH_AUTH_TOKEN environment variable)
+    # 2. Web Surfer tool (requires STEP_SEARCH_API_KEY or STEP_API_KEY)
     web_surfer_tool = create_batch_web_surfer_tool()
     if web_surfer_tool:
         toolset.register(web_surfer_tool)
     else:
-        logger.warning("web_surfer tool not registered, please check STEP_SEARCH_AUTH_TOKEN environment variable")
+        logger.warning(
+            "web_surfer tool not registered, please check STEP_SEARCH_API_KEY/STEP_API_KEY"
+        )
 
     # 3. File tool (read/write/list local files)
     file_tool = create_file_tool()

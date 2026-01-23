@@ -34,13 +34,14 @@ def _check_if_finished(response_message: ChatMessage | None) -> bool:
 
 
 async def process_messages(
-    system_prompt: str,
+    system_prompt: str | None,
     messages: list[ChatMessage],
     toolset: ToolSet,
     model_api: ModelAPI,
     use_stream: bool,
+    trace_messages: list[ChatMessage] | None = None,
 ) -> AsyncGenerator[AgentResponse, None]:
-    if len(system_prompt) == 0:
+    if not system_prompt:
         system_prompt = """You are a professional task execution assistant capable of calling tools to complete tasks.
 Your task is:
 1. Understand the task proposed by the user
@@ -58,7 +59,9 @@ Please ensure:
 
     # Prepare message list
     infer_messages = messages.copy()
-    if system_prompt and not any(msg.role == "system" for msg in infer_messages):
+    if system_prompt and not any(
+        msg.role == "system" and msg.content == system_prompt for msg in infer_messages
+    ):
         infer_messages.insert(0, ChatMessage(role="system", content=system_prompt))
 
     # Get all tool schemas
@@ -79,6 +82,21 @@ Please ensure:
         )
 
     # Call model
+    trace_request = None
+    if trace_messages is not None:
+        trace_infer_messages = trace_messages.copy()
+        if system_prompt and not any(
+            msg.role == "system" and msg.content == system_prompt
+            for msg in trace_infer_messages
+        ):
+            trace_infer_messages.insert(
+                0, ChatMessage(role="system", content=system_prompt)
+            )
+        trace_request = {
+            "messages": trace_infer_messages,
+            "sent_messages": infer_messages,
+            "tools": tools_for_model if tools_for_model else None,
+        }
 
     if use_stream:
         # Streaming output mode
@@ -88,6 +106,7 @@ Please ensure:
         async for model_msg in model_api.chat_completion_stream(
             messages=infer_messages,
             tools=tools_for_model if tools_for_model else None,
+            trace_request=trace_request,
         ):
             delta_count += 1
             event = model_msg.message
@@ -109,6 +128,7 @@ Please ensure:
         model_msg = await model_api.chat_completion(
             messages=infer_messages,
             tools=tools_for_model if tools_for_model else None,
+            trace_request=trace_request,
         )
         response_message = model_msg.message
 
@@ -178,12 +198,27 @@ class ReActAgent(BaseStepAgent):
             AgentResponse: Response for current step
         """
 
+        trace_messages: list[ChatMessage] | None = None
+        try:
+            trace_messages = list(self.context.get_all())
+        except Exception:  # noqa: BLE001
+            trace_messages = None
+
+        if trace_messages is not None and self._force_final_answer_enabled and self._force_prompt_inserted:
+            prompt_message = self._make_force_final_answer_message()
+            if not trace_messages or not (
+                getattr(trace_messages[-1], "role", None) == prompt_message.role
+                and getattr(trace_messages[-1], "content", None) == prompt_message.content
+            ):
+                trace_messages.append(prompt_message)
+
         async for response_message in process_messages(
             self.system_prompt,
             messages,
             self.toolset(),
             self.model_api(),
             getattr(self.model, "infer_kwargs", {}).get("stream", False),
+            trace_messages=trace_messages,
         ):
             try:
                 yield response_message

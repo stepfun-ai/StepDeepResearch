@@ -16,13 +16,14 @@
 
 
 ## News
+* Jan 23, 2026: 👋 You can get beta access to the model API through StepFun Open Platform. (Our beta testing experience has concluded. Thank you for your support.) [Get API](https://platform.stepfun.com/)
+
 * Dec 25, 2025: 👋 You can join our group chat to get updates on your beta API application status and the latest project developments.
   <div align="center">
     <img src="assets/wechat_qr_code.jpg" alt="WeChat QR code" width="180" />
     <img src="assets/feishu_qr_code.png" alt="Feishu QR code" width="180" />
   </div>
 
-* Dec 24, 2025: 👋 You can get beta access to the model API by completing the form. [Get Access](https://wvixbzgc0u7.feishu.cn/share/base/form/shrcn8CP78PJgkjvvIh2C3EF3cc) 
 * Dec 24, 2025: 👋 We have made our technical report available. [Read](https://arxiv.org/pdf/2512.20491)
 
 
@@ -486,8 +487,6 @@ Agent的记忆系统将从独立组件演进为操作系统级别的原生能力
 
 ## Quick Start
 
-You can get beta access to the model API by completing the [form](https://wvixbzgc0u7.feishu.cn/share/base/form/shrcn8CP78PJgkjvvIh2C3EF3cc).
-
 ### Requirements
 
 - Python >= 3.10
@@ -521,17 +520,19 @@ yarn install
 
 Get your StepFun API key(s) from [StepFun Open Platform](https://platform.stepfun.com/interface-key), the StepFun API key is for both model and search.
 
+Create a `.env` file in the repo root:
+
 ```bash
 # Model provider
-export MODEL_PROVIDER="stepfun"
+MODEL_PROVIDER=stepfun
 # Model API base URL (StepFun)
-export MODEL_BASE="https://api.stepfun.com"
+MODEL_BASE=https://api.stepfun.com
 # StepFun model API key
-export STEP_MODEL_API_KEY="your-model-api-key"
+STEP_MODEL_API_KEY=your-model-api-key
 # Search API base URL (StepFun search service)
-export STEP_SEARCH_API_BASE="https://api.stepfun.com"
+STEP_SEARCH_API_BASE=https://api.stepfun.com
 # StepFun search API key
-export STEP_SEARCH_API_KEY="your-search-api-key"
+STEP_SEARCH_API_KEY=your-search-api-key
 ```
 
 **Recommended System Prompt**

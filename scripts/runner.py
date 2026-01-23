@@ -79,14 +79,23 @@ def _stringify_content(content: Any) -> str:
         parts: list[str] = []
         for block in content:
             if isinstance(block, dict):
-                text = block.get("text") or block.get("content")
-                if isinstance(text, str):
-                    parts.append(text)
-                else:
-                    parts.append(json.dumps(block, ensure_ascii=False))
+                text_value = block.get("text") or block.get("content")
+                if isinstance(text_value, str):
+                    parts.append(text_value)
+                    continue
+
+                data_value = block.get("data")
+                if isinstance(data_value, dict):
+                    nested_text = data_value.get("text") or data_value.get("content")
+                    if isinstance(nested_text, str):
+                        parts.append(nested_text)
+                        continue
+                    nested_thinking = data_value.get("thinking")
+                    if isinstance(nested_thinking, str):
+                        continue
             else:
                 parts.append(str(block))
-        return "\n".join(parts)
+        return "\n".join(parts) if parts else json.dumps(content, ensure_ascii=False)
     return json.dumps(content, ensure_ascii=False)
 
 
@@ -348,10 +357,15 @@ async def run_single_task(
     )
 
     formatted_events: list[dict[str, Any]] = []
-    final_answer = None
+    final_answer: str | None = None
     final_message: ChatMessage | None = None
     final_status = AgentRunningStatus.RUNNING.value
     error_message = None
+    last_assistant_message: ChatMessage | None = None
+    finished_assistant_message: ChatMessage | None = None
+    saw_finished = False
+    saw_stopped = False
+    saw_error = False
     start_monotonic = time.perf_counter()
     started_at = datetime.now(tz=timezone.utc).isoformat()
 
@@ -366,13 +380,30 @@ async def run_single_task(
         ):
             formatted_events.append(_format_event(event, idx, max_block_chars=max_block_chars))
             idx += 1
+            if event.type == AgentEventType.ERROR and event.error:
+                error_message = event.error
+                saw_error = True
             if event.type == AgentEventType.RESPONSE and event.response:
                 final_status = event.response.status.value
                 if event.response.error_msg is not None:
                     error_message = event.response.error_msg
+                if event.response.status == AgentRunningStatus.FINISHED:
+                    saw_finished = True
+                elif event.response.status == AgentRunningStatus.STOPPED:
+                    saw_stopped = True
+                elif event.response.status == AgentRunningStatus.ERROR:
+                    saw_error = True
+
+                message = event.response.message
+                if message is not None and message.role == "assistant":
+                    last_assistant_message = message
+                    if event.response.status == AgentRunningStatus.FINISHED:
+                        finished_assistant_message = message
+
                 if (
                     event.response.message_type == AgentMessageType.FINAL
                     and event.response.message is not None
+                    and event.response.message.role == "assistant"
                 ):
                     final_message = event.response.message
                     final_answer = _extract_answer_text(event.response.message.content)
@@ -380,9 +411,22 @@ async def run_single_task(
         logger.exception("Task %s failed: %s", task.id, exc)
         error_message = str(exc)
         final_status = AgentRunningStatus.ERROR.value
+        saw_error = True
 
     duration = time.perf_counter() - start_monotonic
     completed_at = datetime.now(tz=timezone.utc).isoformat()
+
+    if saw_error:
+        final_status = AgentRunningStatus.ERROR.value
+    elif saw_stopped:
+        final_status = AgentRunningStatus.STOPPED.value
+    elif saw_finished:
+        final_status = AgentRunningStatus.FINISHED.value
+
+    if final_message is None:
+        final_message = finished_assistant_message or last_assistant_message
+        if final_message is not None:
+            final_answer = _extract_answer_text(final_message.content)
 
     formatted_final_message = _format_message(final_message, max_block_chars=None)
 

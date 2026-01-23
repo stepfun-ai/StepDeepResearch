@@ -1,3 +1,4 @@
+import copy
 import json
 import logging
 import re
@@ -160,25 +161,115 @@ class BaseStepAgent(BaseAgent):
         self._model_name = getattr(config.model, "name", None) if config and config.model else None
 
     def _insert_final_prompt(self) -> None:
-        """Inject final-answer prompt once."""
+        """Activate the force-final-answer prompt for subsequent model calls.
+
+        Kept for backward compatibility; this does not mutate persisted context history.
+        """
         if not self._force_final_answer_enabled or self._force_prompt_inserted:
             return
-        prompt = self._force_final_answer_prompt or DEFAULT_FORCE_FINAL_ANSWER_PROMPT
-        self.context.add([ChatMessage(role="system", content=prompt)])
         self._force_prompt_inserted = True
-        logger.info("@%s Final answer prompt injected", self.name)
+        logger.info("@%s Final answer prompt activated", self.name)
 
-    def _shrink_batch_search_results(self) -> bool:
-        """Compress earliest uncompressed batch_search_result content."""
-        messages = self.context.get_all()
-        for message in messages:
-            content = getattr(message, "content", None)
+    def _make_force_final_answer_message(self) -> ChatMessage:
+        prompt = self._force_final_answer_prompt or DEFAULT_FORCE_FINAL_ANSWER_PROMPT
+        return ChatMessage(role="system", content=prompt)
+
+    def _ensure_final_prompt(self, messages: list[ChatMessage]) -> None:
+        """Ensure the force-final-answer prompt is present in model input.
+
+        This should not mutate the persisted context history.
+        """
+        if not self._force_final_answer_enabled or not self._force_prompt_inserted:
+            return
+        prompt_message = self._make_force_final_answer_message()
+        if messages:
+            last = messages[-1]
             if (
-                isinstance(content, str)
-                and "<batch_search_results" in content
+                getattr(last, "role", None) == prompt_message.role
+                and getattr(last, "content", None) == prompt_message.content
+            ):
+                return
+        messages.append(prompt_message)
+
+    @staticmethod
+    def _copy_messages(messages: list[ChatMessage]) -> list[ChatMessage]:
+        """Deep-copy messages so we can mutate model input without touching stored history."""
+        copied: list[ChatMessage] = []
+        for message in messages:
+            try:
+                copied.append(message.model_copy(deep=True))
+            except Exception:
+                copied.append(copy.deepcopy(message))
+        return copied
+
+    @classmethod
+    def _compress_batch_search_in_block(cls, block: dict) -> bool:
+        """Compress batch_search XML in the first text block found (in-place)."""
+        if block.get("type") == "text":
+            text_value = block.get("text")
+            if (
+                isinstance(text_value, str)
+                and "<batch_search_results" in text_value
+                and "batch_search_results_compressed" not in text_value
+            ):
+                block["text"] = _compress_batch_search_result(text_value)
+                return True
+
+        nested = block.get("content")
+        if isinstance(nested, list):
+            for item in nested:
+                if isinstance(item, dict) and cls._compress_batch_search_in_block(item):
+                    return True
+        return False
+
+    @classmethod
+    def _compress_batch_search_in_content(cls, content: Any) -> tuple[Any, bool]:
+        if isinstance(content, str):
+            if (
+                "<batch_search_results" in content
                 and "batch_search_results_compressed" not in content
             ):
-                message.content = _compress_batch_search_result(content)
+                return _compress_batch_search_result(content), True
+            return content, False
+
+        if isinstance(content, list):
+            for item in content:
+                if isinstance(item, dict) and cls._compress_batch_search_in_block(item):
+                    return content, True
+            return content, False
+
+        return content, False
+
+    def _prepare_messages_for_model(self) -> list[ChatMessage]:
+        """Build the message list sent to the model, without mutating stored history."""
+        raw_messages = self.context.get_all()
+        messages: list[ChatMessage] = list(raw_messages)
+
+        if not self._force_final_answer_enabled:
+            return messages
+
+        # If final-answer mode has been activated before, always include the prompt in model input.
+        self._ensure_final_prompt(messages)
+
+        token_estimate = _estimate_token_length(messages, self._model_name)
+        if token_estimate < self._force_final_answer_upper_limit:
+            return messages
+
+        # We are going to mutate messages for context management: deep-copy first.
+        messages = self._copy_messages(messages)
+
+        self._handle_context_overflow(messages)
+        self._ensure_final_prompt(messages)
+        self._ensure_context_within_upper_limit(messages)
+        return messages
+
+    def _shrink_batch_search_results(self, messages: list[ChatMessage]) -> bool:
+        """Compress earliest uncompressed batch_search_result content (model-input only)."""
+        for message in messages:
+            content = getattr(message, "content", None)
+            new_content, changed = self._compress_batch_search_in_content(content)
+            if changed:
+                message.content = new_content
                 logger.info("@%s Compressed batch_search_results to save tokens", self.name)
                 return True
         return False
@@ -209,16 +300,17 @@ class BaseStepAgent(BaseAgent):
 
     def _drop_oldest_tool_cycle(
         self,
+        messages: list[ChatMessage],
         predicate: Callable[[str | None, dict[str, Any]], bool] | None = None,
         log_context: str = "tool",
     ) -> bool:
-        """Drop earliest tool call (and its result) that matches predicate."""
-        messages = self.context.get_all()
-        drop_indices: list[int] = []
+        """Drop earliest tool call message plus all corresponding tool results."""
+        drop_indices: set[int] = set()
         for idx, message in enumerate(messages):
             tool_calls = getattr(message, "tool_calls", None)
             if not tool_calls:
                 continue
+            matched_any = False
             for tc in tool_calls:
                 try:
                     tool_name = tc.function.name
@@ -229,33 +321,41 @@ class BaseStepAgent(BaseAgent):
                 parsed_args = self._parse_tool_call_arguments(raw_arguments)
                 if predicate and not predicate(tool_name, parsed_args):
                     continue
-                drop_indices.append(idx)
-                # Find corresponding tool result
+                matched_any = True
+
+            if not matched_any:
+                continue
+
+            drop_indices.add(idx)
+
+            # Find corresponding tool results for all tool calls in this message.
+            for tc in tool_calls:
+                tc_id = getattr(tc, "id", None)
+                if not tc_id:
+                    continue
                 for j in range(idx + 1, len(messages)):
                     tool_msg = messages[j]
                     if getattr(tool_msg, "role", None) != "tool":
                         continue
-                    if getattr(tool_msg, "tool_call_id", None) == getattr(tc, "id", None):
-                        drop_indices.append(j)
+                    if getattr(tool_msg, "tool_call_id", None) == tc_id:
+                        drop_indices.add(j)
                         break
-                break
-            if drop_indices:
-                break
+
+            break
 
         if not drop_indices:
             return False
 
-        for offset, del_idx in enumerate(sorted(drop_indices)):
-            messages.pop(del_idx - offset)
+        for del_idx in sorted(drop_indices, reverse=True):
+            messages.pop(del_idx)
 
         logger.warning(
             "@%s Dropped earliest %s tool call/results to shrink context", self.name, log_context
         )
         return True
 
-    def _trim_oldest_messages(self) -> bool:
+    def _trim_oldest_messages(self, messages: list[ChatMessage]) -> bool:
         """Drop oldest non-system messages until under threshold."""
-        messages = self.context.get_all()
         if not messages or len(messages) <= 1:
             return False
         removed = False
@@ -274,21 +374,21 @@ class BaseStepAgent(BaseAgent):
             logger.warning("@%s Trimmed oldest messages to satisfy context budget", self.name)
         return removed
 
-    def _ensure_context_within_upper_limit(self) -> None:
+    def _ensure_context_within_upper_limit(self, messages: list[ChatMessage]) -> None:
         """Ensure context is below the configured upper limit before forcing final answer."""
-        if not self.context:
+        if not self._force_final_answer_enabled:
             return
         while True:
-            token_estimate = _estimate_token_length(self.context.get_all(), self._model_name)
+            token_estimate = _estimate_token_length(messages, self._model_name)
             if token_estimate <= self._force_final_answer_upper_limit:
                 return
-            if self._drop_oldest_tool_cycle(log_context="any"):
+            if self._drop_oldest_tool_cycle(messages, log_context="any"):
                 continue
-            if self._trim_oldest_messages():
+            if self._trim_oldest_messages(messages):
                 continue
             break
 
-        final_tokens = _estimate_token_length(self.context.get_all(), self._model_name)
+        final_tokens = _estimate_token_length(messages, self._model_name)
         if final_tokens > self._force_final_answer_upper_limit:
             logger.warning(
                 "@%s Unable to trim context below upper limit (%s tokens remaining)",
@@ -296,12 +396,12 @@ class BaseStepAgent(BaseAgent):
                 final_tokens,
             )
 
-    def _handle_context_overflow(self) -> None:
+    def _handle_context_overflow(self, messages: list[ChatMessage]) -> None:
         """Enforce two-threshold hysteresis for search results before triggering final answer."""
-        if not self._force_final_answer_enabled or not self.context:
+        if not self._force_final_answer_enabled:
             return
 
-        token_estimate = _estimate_token_length(self.context.get_all(), self._model_name)
+        token_estimate = _estimate_token_length(messages, self._model_name)
         if token_estimate < self._force_final_answer_upper_limit:
             return
 
@@ -317,19 +417,19 @@ class BaseStepAgent(BaseAgent):
         )
 
         while True:
-            token_estimate = _estimate_token_length(self.context.get_all(), self._model_name)
+            token_estimate = _estimate_token_length(messages, self._model_name)
             if token_estimate < self._force_final_answer_lower_limit:
                 break
 
-            if self._shrink_batch_search_results():
+            if self._shrink_batch_search_results(messages):
                 continue
 
-            if self._drop_oldest_tool_cycle(self._is_search_tool_call, "search"):
+            if self._drop_oldest_tool_cycle(messages, self._is_search_tool_call, "search"):
                 continue
 
             break
 
-        final_tokens = _estimate_token_length(self.context.get_all(), self._model_name)
+        final_tokens = _estimate_token_length(messages, self._model_name)
         if final_tokens < self._force_final_answer_lower_limit:
             return
 
@@ -343,9 +443,9 @@ class BaseStepAgent(BaseAgent):
             self._force_final_answer_lower_limit,
         )
 
-        self._ensure_context_within_upper_limit()
-
-        self._insert_final_prompt()
+        if not self._force_prompt_inserted:
+            self._force_prompt_inserted = True
+            logger.info("@%s Final answer prompt activated", self.name)
 
     async def _run(
         self,
@@ -398,12 +498,10 @@ class BaseStepAgent(BaseAgent):
                 logger.info(f"@{self.name} Round {self.current_round}/{self.max_steps}")
 
                 try:
-                    self._handle_context_overflow()
                     # Call step() method (now an async generator)
                     last_response = None
-                    async for response in self._step(
-                        self.context.get_all(), additional_kwargs
-                    ):
+                    model_messages = self._prepare_messages_for_model()
+                    async for response in self._step(model_messages, additional_kwargs):
                         # Update history messages (using member variable)
                         # Only add complete messages to history (has role field and not STREAM type)
                         logger.info(f"@{self.name} Response: {response}")

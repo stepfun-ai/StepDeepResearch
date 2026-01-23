@@ -78,6 +78,7 @@ class CheckpointReActAgent(CheckpointAgent):
                 self.toolset(),
                 self.model_api(),
                 getattr(self.model, "infer_kwargs", {}).get("stream", False),
+                trace_messages=list(messages) if messages else [],
             ):
                 yield response_message
         except Exception as e:
