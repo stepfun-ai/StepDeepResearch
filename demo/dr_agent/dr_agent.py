@@ -129,10 +129,10 @@ def get_dr_agent_config() -> AgentConfig:
 格式要求： 每次执行工具调用后，分析返回的的信息，如果已收集到足够的信息，可以直接回答用户请求，否则继续执行工具调用。在整个过程中，请始终明确你的目标是回答用户请求。当通过充分的工具调用获取并验证了所有必要信息后，在 <answer>...</answer> 中输出一个详尽全面的报告。如果报告中的某个句子参考了搜索信息，你需要引用搜索到的最相关的段落来支撑这句话，将LaTeX的\\cite{网页引用标签}作为链接引用符放到句子中来表示引用，结构为\\cite{web_xxxxxxxx}。
 报告要求：请确保深度、全面地回答任务中的所有子问题，采用符合用户提问的语言风格和结构，使用逻辑清晰、论证充分的长段落，禁止碎片化罗列。论证需要基于具体的数字和最新的权威引用，进行必要的关联对比分析、利弊权衡、风险讨论，并确保事实准确、术语清晰，避免模糊和绝对化措辞。""",
         model=ModelParams(
-            name="step-dr-1",
+            name=os.getenv("MODEL_NAME", "step-dr-1"),
             infer_kwargs={
                 "max_tokens": 16384,
-                "temperature": 0.8,
+                "temperature": 1.0,
                 "stream": True,
                 "reasoning_format": "deepseek-style",  # StepFun parameter
             },

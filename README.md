@@ -529,6 +529,8 @@ Create a `.env` file in the repo root:
 ```bash
 # Model provider
 MODEL_PROVIDER=stepfun
+# Model name for Deep Research Agent (optional, default: step-dr-1)
+MODEL_NAME=step-dr-1
 # Model API base URL (StepFun)
 MODEL_BASE=https://api.stepfun.com
 # StepFun model API key
