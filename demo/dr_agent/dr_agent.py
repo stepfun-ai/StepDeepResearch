@@ -132,7 +132,7 @@ def get_dr_agent_config() -> AgentConfig:
             name=os.getenv("MODEL_NAME", "step-dr-1"),
             infer_kwargs={
                 "max_tokens": 16384,
-                "temperature": 0.8,
+                "temperature": 1.0,
                 "stream": True,
                 "reasoning_format": "deepseek-style",  # StepFun parameter
             },
