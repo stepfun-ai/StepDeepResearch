@@ -57,11 +57,9 @@ Please ensure:
 - When the task is complete, clearly state "Task completed"
 """
 
-    # Prepare message list
+    # Prepare message list (only insert system if none present, to avoid duplicate when runner/caller already added one)
     infer_messages = messages.copy()
-    if system_prompt and not any(
-        msg.role == "system" and msg.content == system_prompt for msg in infer_messages
-    ):
+    if system_prompt and not any(msg.role == "system" for msg in infer_messages):
         infer_messages.insert(0, ChatMessage(role="system", content=system_prompt))
 
     # Get all tool schemas
@@ -85,10 +83,7 @@ Please ensure:
     trace_request = None
     if trace_messages is not None:
         trace_infer_messages = trace_messages.copy()
-        if system_prompt and not any(
-            msg.role == "system" and msg.content == system_prompt
-            for msg in trace_infer_messages
-        ):
+        if system_prompt and not any(msg.role == "system" for msg in trace_infer_messages):
             trace_infer_messages.insert(
                 0, ChatMessage(role="system", content=system_prompt)
             )

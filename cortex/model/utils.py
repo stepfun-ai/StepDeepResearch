@@ -52,8 +52,12 @@ def merge_delta_message(d1: dict | None, d2: dict | None) -> dict:
             elif isinstance(result[key], dict) and isinstance(value, dict):
                 # Recursively merge nested dictionaries
                 result[key] = merge_delta_message(result[key], value)
-            elif isinstance(result[key], str) and isinstance(value, str):
-                result[key] += value
+            elif isinstance(result[key], str) and isinstance(value, str) and value:
+                # type/id are fixed enum-like values, don't concatenate (avoids "functionfunction...")
+                if key in ("type", "id"):
+                    result[key] = value
+                else:
+                    result[key] += value
             elif isinstance(result[key], list) and isinstance(value, list):
                 result[key] += value
             elif isinstance(result[key], (int, float)) and isinstance(
