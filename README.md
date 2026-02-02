@@ -17,6 +17,7 @@
 
 ## News
 
+* Feb 2, 2026: 👋 We have released **Step 3.5 Flash**, achieving **65.27** on <span style="font-variant: small-caps;">ResearchRubrics</span>. Try it out by setting the environment variable `MODEL_NAME=step-3.5-flash`. [Details](https://static.stepfun.com/blog/step-3.5-flash/)
 
 * Dec 25, 2025: 👋 You can join our group chat to get updates on your beta API application status and the latest project developments.
   <div align="center">
@@ -34,14 +35,20 @@
   **Step-DeepResearch** is a cost-effective, end-to-end deep research agent model designed for autonomous information exploration and professional report generation in open-ended research scenarios.
   - **Atomic Capability Integration**: By decomposing complex research tasks into trainable atomic capabilities—including planning, information seeking, reflection and cross-validation, and professional report generation—and achieving deep internalization at the model level, the system ensures closed-loop reflection and dynamic correction within a single inference pass.
   - **Progressive Training Pipeline**: We establish a complete optimization path from Agentic Mid-Training to Supervised Fine-Tuning (SFT) and Reinforcement Learning (RL), reshaping the training objective from "predicting the next token" to "deciding the next atomic action." This approach effectively enhances the model's adaptive capabilities and generalization performance in complex environments.
-  - **Strong Performance Across Model Scales**: With only 32B parameters, Step-DeepResearch achieves 61.4% on Scale AI Research Rubrics, matching OpenAI Deep Research and Gemini Deep Research. In expert human evaluations on ADR-Bench, its Elo score significantly outperforms larger models including DeepSeek-v3.2 and GLM-4.6, and rivals top-tier closed-source models.
+  - **Strong Performance Across Model Scales**: With only 32B parameters, Step-DeepResearch achieves 61.4% on Scale AI <span style="font-variant: small-caps;">ResearchRubrics</span>, matching OpenAI Deep Research and Gemini Deep Research. In expert human evaluations on ADR-Bench, its Elo score significantly outperforms larger models including DeepSeek-v3.2 and GLM-4.6, and rivals top-tier closed-source models.
+  - **New model (Step 3.5 Flash)**: **Step 3.5 Flash** reaches **65.27** on <span style="font-variant: small-caps;">ResearchRubrics</span>, delivering research quality that competes with OpenAI and Gemini Deep Research while maintaining significantly higher inference efficiency. [Details](https://static.stepfun.com/blog/step-3.5-flash/)
   - **Superior Cost-Effectiveness**: With extremely low deployment and inference costs while maintaining expert-level research capabilities, Step-DeepResearch stands as the most cost-effective deep research agent solution currently available in the industry.
   - **Access**: Available via StepFun Open Platform API, free for the first month.
 
   <div align="center">
     <img width="920" alt="Cost-Performance & ADR-Bench comparison" src="assets/combined_comparison.svg"><br/>
-    (left) <b>Cost-Efficiency on Research Rubrics:</b> Step-DeepResearch achieves near-top performance (61.42) while significantly reducing inference costs (RMB), positioned at the high-efficiency frontier. 
+    (left) <b>Cost-Efficiency on <span style="font-variant: small-caps;">ResearchRubrics</span>:</b> Step-DeepResearch achieves near-top performance (61.42) while significantly reducing inference costs (RMB), positioned at the high-efficiency frontier. 
     (right) <b>Expert Evaluation on ADR-Bench:</b> Step-DeepResearch consistently leads in Elo ratings across all dimensions, rivaling top-tier closed-source models.
+  </div>
+
+  <div align="center">
+    <img width="720" alt="Performance on Research Rubrics" src="assets/performance_on_rr.png"><br/>
+    <b>Performance on <span style="font-variant: small-caps;">ResearchRubrics</span>:</b> Step 3.5 Flash achieves 65.27 on the benchmark.
   </div>
   
 ### System Architecture
@@ -529,7 +536,7 @@ Create a `.env` file in the repo root:
 ```bash
 # Model provider
 MODEL_PROVIDER=stepfun
-# Model name for Deep Research Agent (optional, default: step-dr-1)
+# Model name for Deep Research Agent (optional: step-dr-1, step-3.5-flash; default: step-dr-1)
 MODEL_NAME=step-dr-1
 # Model API base URL (StepFun)
 MODEL_BASE=https://api.stepfun.com
