@@ -25,8 +25,6 @@
     <img src="assets/feishu_qr_code.png" alt="Feishu QR code" width="180" />
   </div>
 
-* Dec 25, 2025: 👋 You can get beta access to the model API through StepFun Open Platform. [Get Access](https://wvixbzgc0u7.feishu.cn/share/base/form/shrcn8CP78PJgkjvvIh2C3EF3cc)
-
 * Dec 24, 2025: 👋 We have made our technical report available. [Read](https://arxiv.org/pdf/2512.20491)
 
 
@@ -496,7 +494,7 @@ Agent的记忆系统将从独立组件演进为操作系统级别的原生能力
 
 ## Quick Start
 
-You can get beta access to the model API through StepFun Open Platform. [Get Access](https://wvixbzgc0u7.feishu.cn/share/base/form/shrcn8CP78PJgkjvvIh2C3EF3cc)
+You can get beta access to the model API through StepFun Open Platform. 
 
 ### Requirements
 
